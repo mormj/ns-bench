@@ -1,0 +1,39 @@
+module: bench
+block: latency_meas_sink
+label: Latency Measurement Sink
+
+properties:
+-   id: blocktype
+    value: sync
+
+parameters:
+-   id: itemsize
+    label: Item Size
+    dtype: size_t
+-   id: samp_rate
+    label: Sampling Rate
+    dtype: unsigned int
+-   id: blocking
+    label: Blocking
+    dtype: bool
+    default: 'true'
+
+
+ports:
+-   domain: stream
+    id: in
+    direction: input
+    type: untyped
+    size: itemsize
+
+# -   domain: stream
+#     id: out
+#     direction: output
+#     type: untyped
+#     size: itemsize
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1
