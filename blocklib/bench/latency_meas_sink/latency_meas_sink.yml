@@ -36,4 +36,10 @@ implementations:
 -   id: cpu
 # -   id: cuda
 
+callbacks:
+# virtual double avg_latency() = 0;
+-   id: avg_latency
+    return: double
+
+
 file_format: 1

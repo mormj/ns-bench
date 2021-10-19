@@ -12,14 +12,19 @@ work_return_code_t
 latency_meas_sink_cpu::work(std::vector<block_work_input>& work_input,
                             std::vector<block_work_output>& work_output)
 {
-    auto now = std::chrono::system_clock::now();
-    if (!d_started) {
+    // auto now = std::chrono::system_clock::now();
+    // if (!d_started) {
         // d_start = std::chrono::steady_clock::now();
-        d_started = true;
-    } else {
+        // d_started = true;
+    // } else {
         if (d_blocking) {
+            
             auto now = std::chrono::steady_clock::now();
             auto expected_time = d_start + d_sample_period * d_total_samples;
+            // auto ms  =
+            //     std::chrono::duration_cast<std::chrono::milliseconds>(expected_time - now)
+            //         .count();
+            // std::cout << "Blocking for " << ms << " ms " << std::endl;
 
             // wait until the last batch would have finished up processing
             if (expected_time > now) {
@@ -32,12 +37,16 @@ latency_meas_sink_cpu::work(std::vector<block_work_input>& work_input,
                 }
                 std::this_thread::sleep_until(expected_time);
             }
-        }
-    }
 
-    now = std::chrono::system_clock::now();
+            // std::cout << " ... Done blocking " << std::endl;
+        }
+    // }
+
+    auto now = std::chrono::system_clock::now();
     // auto in = static_cast<const uint8_t*>(work_input[0].items());
     auto noutput_items = work_input[0].n_items;
+
+    // std::cout << "noutput = " <<  noutput_items << std::endl;
 
     auto tags = work_input[0].tags_in_window(0, noutput_items);
     for (auto& t : tags) {
@@ -48,11 +57,11 @@ latency_meas_sink_cpu::work(std::vector<block_work_input>& work_input,
         // std::cout << "received: " << microseconds << std::endl;
         auto nr = work_input[0].nitems_read();
         auto diff = microseconds - pmt::to_long(t.value);
-        std::cout << d_samp_rate << " " << t.offset - nr << " " << 1e6 * (t.offset - nr)
-                  << " " << (1e6 * (t.offset - nr)) / d_samp_rate << std::endl;
+        // std::cout << d_samp_rate << " " << t.offset - nr << " " << 1e6 * (t.offset - nr)
+        //           << " " << (1e6 * (t.offset - nr)) / d_samp_rate << std::endl;
         auto adjusted_diff = diff + (int64_t)((1e6 * (t.offset - nr)) / d_samp_rate);
-        std::cout << "received: " << microseconds << " - " << pmt::to_long(t.value)
-                  << " = " << diff << " --> " << adjusted_diff << std::endl;
+        // std::cout << "received: " << microseconds << " - " << pmt::to_long(t.value)
+        //           << " = " << diff << " --> " << adjusted_diff << std::endl;
         // d_latency_estimates.push_back(adjusted_diff);
         d_num_latency++;
         auto a = 1.0 / (double)d_num_latency;
