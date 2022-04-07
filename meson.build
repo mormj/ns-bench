@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2020 Josh Morman 
 #
 
-project('newsched-bench', 'cpp', 
+project('gnuradio-bench', 'cpp', 
   version : '0.0.0',
   license : 'GPLv3',
   default_options : ['cpp_std=c++17'])
@@ -36,10 +36,10 @@ prefix_parts = prefix.split(' ')
 prefix = '\ '.join(prefix_parts)
 share_dir = join_paths(prefix,'share')
 
-# newsched_dep = dependency('newsched', method: 'cmake')
+# gnuradio_dep = dependency('gnuradio', method: 'cmake')
 # TODO - do this with subcomponents
-pmt_dep = dependency('newsched-pmt')
-newsched_runtime_dep = dependency('newsched-runtime')
+pmt_dep = dependency('pmtf')
+gnuradio_runtime_dep = dependency('gnuradio-runtime')
 
 prefix = get_option('prefix')
 # Escape spaces
@@ -47,6 +47,11 @@ prefix_parts = prefix.split(' ')
 prefix = '\ '.join(prefix_parts)
 share_dir = join_paths(prefix,'share')
 
+USE_CUDA = cuda_available and get_option('enable_cuda')
+IMPLEMENT_CUDA = USE_CUDA
+IMPLEMENT_CPU = true
+SCRIPTS_DIR=join_paths(share_dir,'utils','blockbuilder','scripts')
+
 subdir('blocklib')
 
-subdir('python/newsched')
+subdir('python/gnuradio')

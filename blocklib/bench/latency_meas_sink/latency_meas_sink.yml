@@ -1,10 +1,7 @@
 module: bench
 block: latency_meas_sink
 label: Latency Measurement Sink
-
-properties:
--   id: blocktype
-    value: sync
+blocktype: sync_block
 
 parameters:
 -   id: itemsize
@@ -24,7 +21,7 @@ ports:
     id: in
     direction: input
     type: untyped
-    size: itemsize
+    size: parameters/itemsize
 
 # -   domain: stream
 #     id: out

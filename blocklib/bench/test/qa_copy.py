@@ -6,8 +6,8 @@
 #
 #
 
-from newsched import gr, gr_unittest, blocks
-from newsched import bench
+from gnuradio import gr, gr_unittest, blocks
+from gnuradio import bench
 
 class test_copy(gr_unittest.TestCase):
 

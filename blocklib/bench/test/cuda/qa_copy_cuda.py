@@ -7,8 +7,8 @@
 #
 
 
-from newsched import gr, gr_unittest, blocks, math
-from newsched import bench
+from gnuradio import gr, gr_unittest, blocks, math
+from gnuradio import bench
 # import pmt
 
 

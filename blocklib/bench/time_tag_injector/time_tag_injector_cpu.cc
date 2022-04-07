@@ -1,4 +1,4 @@
-#include "time_tag_injector_cpu.hh"
+#include "time_tag_injector_cpu.h"
 
 namespace gr {
 namespace bench {
@@ -9,12 +9,12 @@ time_tag_injector::sptr time_tag_injector::make_cpu(const block_args& args)
 }
 
 work_return_code_t
-time_tag_injector_cpu::work(std::vector<block_work_input>& work_input,
-                            std::vector<block_work_output>& work_output)
+time_tag_injector_cpu::work(std::vector<block_work_input_sptr>& work_input,
+                            std::vector<block_work_output_sptr>& work_output)
 {
-    auto in = work_input[0].items<uint8_t>();
-    auto out = work_output[0].items<uint8_t>();
-    auto noutput_items = work_output[0].n_items;
+    auto in = work_input[0]->items<uint8_t>();
+    auto out = work_output[0]->items<uint8_t>();
+    auto noutput_items = work_output[0]->n_items;
 
     // The time at which the work function is called
     auto now = std::chrono::steady_clock::now();
@@ -30,9 +30,10 @@ time_tag_injector_cpu::work(std::vector<block_work_input>& work_input,
 
         // std::cout << "adding tag at " << nitems_written(0) + noutput_items / 2 << "
         // with val " << diff << std::endl;
-        work_output[0].add_tag(work_output[0].nitems_written(), // + noutput_items / 2,
-                                   pmt::string_to_symbol("time"),
-                                   pmt::from_long(diff));
+        work_output[0]->add_tag(work_output[0]->nitems_written(), // + noutput_items / 2,
+                                pmtf::map({
+                                    { "time", diff },
+                                }));
     }
 
     std::memcpy(out, in, noutput_items * d_itemsize);

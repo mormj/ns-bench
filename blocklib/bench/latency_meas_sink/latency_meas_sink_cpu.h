@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gnuradio/bench/latency_meas_sink.hh>
+#include <gnuradio/bench/latency_meas_sink.h>
 #include <chrono>
 #include <thread>
 
@@ -14,8 +14,8 @@ public:
     d_itemsize(args.itemsize), d_samp_rate(args.samp_rate), d_blocking(args.blocking) {
         d_sample_period = std::chrono::duration<double>((double)1.0 / d_samp_rate);
     }
-    virtual work_return_code_t work(std::vector<block_work_input>& work_input,
-                                    std::vector<block_work_output>& work_output) override;
+virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
+                                    std::vector<block_work_output_sptr>& work_output) override;
 
     bool start() override{
         d_start = std::chrono::steady_clock::now();
