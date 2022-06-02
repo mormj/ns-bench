@@ -16,7 +16,7 @@ tb = gr.flowgraph()
 nsamples = 100000
 samp_rate = 32000
 interval = 0.1
-ncopy = 1
+ncopy = 4
 
 managed_latency_in_seconds = .00005
 max_fill = int(samp_rate * managed_latency_in_seconds )
@@ -25,7 +25,7 @@ print(f'max_fill={max_fill}')
 src = blocks.null_source()
 hd = streamops.head(nsamples)
 inj = bench.time_tag_injector(gr.sizeof_gr_complex, interval, samp_rate)
-cp1 = streamops.copy(gr.sizeof_gr_complex)
+# cp1 = streamops.copy(gr.sizeof_gr_complex)
 snk = bench.latency_meas_sink(gr.sizeof_gr_complex, samp_rate)
 # snk = blocks.null_sink()
 edges = tb.connect([src, hd, inj])
