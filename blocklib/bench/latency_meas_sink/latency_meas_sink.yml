@@ -6,10 +6,10 @@ blocktype: sync_block
 parameters:
 -   id: itemsize
     label: Item Size
-    dtype: size_t
+    dtype: size
 -   id: samp_rate
     label: Sampling Rate
-    dtype: unsigned int
+    dtype: ru32
 -   id: blocking
     label: Blocking
     dtype: bool
@@ -22,12 +22,6 @@ ports:
     direction: input
     type: untyped
     size: parameters/itemsize
-
-# -   domain: stream
-#     id: out
-#     direction: output
-#     type: untyped
-#     size: itemsize
 
 implementations:
 -   id: cpu

@@ -1,20 +1,20 @@
 #include "time_tag_injector_cpu.h"
+#include "time_tag_injector_cpu_gen.h"
 
 namespace gr {
 namespace bench {
 
-time_tag_injector::sptr time_tag_injector::make_cpu(const block_args& args)
+time_tag_injector_cpu::time_tag_injector_cpu(block_args args)
+    : INHERITED_CONSTRUCTORS, d_itemsize(args.itemsize)
 {
-    return std::make_shared<time_tag_injector_cpu>(args);
+    d_sample_period = std::chrono::duration<double>(args.interval);
 }
 
-work_return_code_t
-time_tag_injector_cpu::work(std::vector<block_work_input_sptr>& work_input,
-                            std::vector<block_work_output_sptr>& work_output)
+work_return_t time_tag_injector_cpu::work(work_io& wio)
 {
-    auto in = work_input[0]->items<uint8_t>();
-    auto out = work_output[0]->items<uint8_t>();
-    auto noutput_items = work_output[0]->n_items;
+    auto in = wio.inputs()[0].items<uint8_t>();
+    auto out = wio.outputs()[0].items<uint8_t>();
+    auto noutput_items = wio.outputs()[0].n_items;
 
     // The time at which the work function is called
     auto now = std::chrono::steady_clock::now();
@@ -30,7 +30,7 @@ time_tag_injector_cpu::work(std::vector<block_work_input_sptr>& work_input,
 
         // std::cout << "adding tag at " << nitems_written(0) + noutput_items / 2 << "
         // with val " << diff << std::endl;
-        work_output[0]->add_tag(work_output[0]->nitems_written(), // + noutput_items / 2,
+        wio.outputs()[0].add_tag(wio.outputs()[0].nitems_written(), // + noutput_items / 2,
                                 pmtf::map({
                                     { "time", diff },
                                 }));
@@ -39,8 +39,8 @@ time_tag_injector_cpu::work(std::vector<block_work_input_sptr>& work_input,
     std::memcpy(out, in, noutput_items * d_itemsize);
 
     // Tell runtime system how many output items we produced.
-    produce_each(noutput_items, work_output);
-    return work_return_code_t::WORK_OK;
+    wio.produce_each(noutput_items);
+    return work_return_t::OK;
 }
 
 

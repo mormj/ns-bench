@@ -16,6 +16,7 @@ bench_deps = []
 
 # Individual block subdirectories
 subdir('latency_meas_sink')
+subdir('pdu_process')
 subdir('time_tag_injector')
 
 

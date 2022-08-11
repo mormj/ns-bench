@@ -1,0 +1,50 @@
+module: bench
+block: pdu_process
+label: pdu_process
+blocktype: sync_block
+
+doc:
+    brief: Copies PDU into newly constructed PDU
+
+typekeys:
+  - id: T
+    type: class
+    options: 
+        - cf32
+        - rf32
+        - ri32
+        - ri16
+        - ru8
+
+parameters:
+-   id: max_messages
+    label: Max Messages
+    dtype: size
+    settable: false
+    default: 0
+-   id: message_count
+    label: Message Count
+    dtype: size
+    cotr: false
+    gettable: true
+    grc:
+      hide: all
+    doc: parameter for querying how many messages have been received
+
+
+ports:
+-   domain: message
+    id: in
+    direction: input
+    optional: true
+
+-   domain: message
+    id: out
+    direction: output
+    optional: true
+
+implementations:
+-   id: cpu
+# -   id: cuda
+
+file_format: 1

@@ -10,22 +10,18 @@ namespace bench {
 class latency_meas_sink_cpu : public latency_meas_sink
 {
 public:
-    latency_meas_sink_cpu(block_args args) : sync_block("latency_meas_sink"), latency_meas_sink(args),
-    d_itemsize(args.itemsize), d_samp_rate(args.samp_rate), d_blocking(args.blocking) {
-        d_sample_period = std::chrono::duration<double>((double)1.0 / d_samp_rate);
-    }
-virtual work_return_code_t work(std::vector<block_work_input_sptr>& work_input,
-                                    std::vector<block_work_output_sptr>& work_output) override;
+    latency_meas_sink_cpu(block_args args);
+    virtual work_return_t work(work_io& wio);
 
-    bool start() override{
+
+    bool start() override
+    {
         d_start = std::chrono::steady_clock::now();
         return true;
     }
 
-    double avg_latency()
-    {
-        return d_avg_latency;
-    }
+    double avg_latency() { return d_avg_latency; }
+
 private:
     size_t d_itemsize;
     unsigned int d_samp_rate;

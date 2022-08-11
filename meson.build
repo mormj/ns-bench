@@ -19,6 +19,8 @@ yaml_dep = dependency('yaml-cpp', version : '>=0.6')
 fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
 spdlog_dep = dependency('spdlog', method: 'cmake', modules : ['spdlog::spdlog'])
 python3_dep = dependency('python3', required : get_option('enable_python'))
+json_dep = dependency('nlohmann_json')
+CLI11_dep = dependency('cli11')
 
 # Import python3 meson module which is used to find the Python dependencies.
 py3_inst = import('python').find_installation('python3')
@@ -39,7 +41,7 @@ share_dir = join_paths(prefix,'share')
 # gnuradio_dep = dependency('gnuradio', method: 'cmake')
 # TODO - do this with subcomponents
 pmt_dep = dependency('pmtf')
-gnuradio_runtime_dep = dependency('gnuradio-runtime')
+gnuradio_gr_dep = dependency('gnuradio-runtime')
 
 prefix = get_option('prefix')
 # Escape spaces
@@ -53,5 +55,5 @@ IMPLEMENT_CPU = true
 SCRIPTS_DIR=join_paths(share_dir,'utils','blockbuilder','scripts')
 
 subdir('blocklib')
-
+subdir('bench')
 subdir('python/gnuradio')
