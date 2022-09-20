@@ -1,6 +1,6 @@
 incdir = include_directories(['../include/gnuradio/bench','../include'])
 
-bench_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmt_dep, json_dep]
+bench_deps += [gnuradio_gr_dep, volk_dep, fmt_dep, pmtf_dep, json_dep]
 bench_sources += []
 
 # # This is ugly, and there HAS to be a better way to bring in dependencies

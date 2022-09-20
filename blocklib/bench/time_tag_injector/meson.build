@@ -7,6 +7,7 @@ srcs = []
 
 
 
+
 if IMPLEMENT_CPU
     srcs += files(['time_tag_injector_cpu.cc'])
 endif
@@ -23,7 +24,8 @@ gen_srcs = custom_target('gen_time_tag_injector_srcs',
                             '--output-pybind', '@OUTPUT2@', 
                             '--output-grc', ['@OUTPUT3@',], 
                             '--grc-index', ['0',],
-                            '--build_dir', join_paths(meson.build_root())],
+                            '--build_dir', join_paths(meson.build_root())
+                            ],
                         install : true,
                         install_dir : [false, 'include/gnuradio/bench',false,'share/gnuradio/grc/blocks',])
 
@@ -39,7 +41,7 @@ gen_impls = custom_target('gen_time_tag_injector_impl',
 bench_deps += declare_dependency(sources : [gen_srcs[1]] ) 
 bench_sources += [srcs, gen_srcs[0], gen_impls]
 
-if get_option('enable_python') 
+if GR_ENABLE_PYTHON 
     
 
     bench_pybind_sources += gen_srcs[2]

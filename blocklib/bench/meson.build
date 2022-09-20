@@ -22,7 +22,7 @@ subdir('time_tag_injector')
 
 subdir('lib')
 if (get_option('enable_python'))
-    subdir('python/bench')
+    subdir('python/gnuradio/bench')
 endif
 
 if (get_option('enable_testing'))

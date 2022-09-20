@@ -36,13 +36,13 @@ gen_bench_pybind = custom_target('gen_bench_pybind',
 
 bench_pybind_sources += gen_bench_pybind
 
-gnuradio_blocklib_bench_pybind = py3_inst.extension_module('bench_python',
+gnuradio_blocklib_bench_pybind = py3.extension_module('bench_python',
     bench_pybind_sources, 
-    include_directories: ['../../lib'],
+    include_directories: ['../../../lib', incdir_numpy],
     dependencies : [gnuradio_blocklib_bench_dep, python3_dep, pybind11_dep],
     link_language : 'cpp',
     install : true,
-    install_dir : join_paths(py3_inst.get_install_dir(),'gnuradio','bench')
+    install_dir : join_paths(py3.get_install_dir(),'gnuradio','bench')
 )
 
 gnuradio_blocklib_bench_pybind_dep = declare_dependency(include_directories : incdir,
@@ -51,4 +51,4 @@ gnuradio_blocklib_bench_pybind_dep = declare_dependency(include_directories : in
 
 
 # Target for pure python
-py3_inst.install_sources(srcs, subdir : join_paths('gnuradio','bench'))
+py3.install_sources(srcs, subdir : join_paths('gnuradio','bench'))

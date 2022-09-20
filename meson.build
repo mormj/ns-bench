@@ -6,54 +6,74 @@ project('gnuradio-bench', 'cpp',
   license : 'GPLv3',
   default_options : ['cpp_std=c++17'])
 
-cc = meson.get_compiler('cpp')
-rt_dep = cc.find_library('rt', required : false)
-libdl_dep = cc.find_library('dl')
+# Import python3 meson module which is used to find the Python dependencies.
+# Python3 is required for code generation
+py3 = import('python').find_installation('python3')
+py3_version = py3.language_version()
+if py3_version.version_compare('< 3.6')
+  error('Invalid python version!?')
+endif
 
-c_available = add_languages('c', required : true)
-cuda_available = add_languages('cuda', required : false)
-
-boost_dep = dependency('boost', modules : ['program_options','thread'], version : '>=1.65')
-volk_dep = dependency('volk', version : '>=2.2')
-yaml_dep = dependency('yaml-cpp', version : '>=0.6')
-fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
-spdlog_dep = dependency('spdlog', method: 'cmake', modules : ['spdlog::spdlog'])
+GR_ENABLE_PYTHON = false
+if (get_option('enable_python'))
 python3_dep = dependency('python3', required : get_option('enable_python'))
+python3_embed_dep = dependency('python3-embed', required : get_option('enable_python'))
+pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
+incdir_numpy = run_command(py3,
+  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
+  check : true
+).stdout().strip()
+
+GR_ENABLE_PYTHON = true
+endif
+
+py3 = import('python').find_installation('python3')
 json_dep = dependency('nlohmann_json')
+
+if (get_option('enable_testing'))
+    TEST_ENV = environment()
+    TEST_ENV.prepend('LD_LIBRARY_PATH', 
+      join_paths( meson.build_root(),'blocklib','tmp','lib'),
+    )
+    TEST_ENV.prepend('PYTHONPATH', join_paths(meson.build_root(),'blocklib/tmp/python'))
+endif
+
+prefix = get_option('prefix')
+# Escape spaces
+prefix_parts = prefix.split(' ')
+prefix = '\ '.join(prefix_parts)
+
+cuda_available = add_languages('cuda', required : false)
+IMPLEMENT_CUDA = cuda_available and get_option('enable_cuda')
+IMPLEMENT_CPU = true
+
+###############################################################################
+# IF Out of Tree Module
+###############################################################################
+share_dir = join_paths(prefix,'share')
+SCRIPTS_DIR = join_paths(share_dir, 'utils','blockbuilder','scripts' )
+###############################################################################
+# Else In-Tree module
+###############################################################################
+# share_dir = meson.project_source_root()
+
+###############################################################################
+# Dependencies
+###############################################################################
+volk_dep = dependency('volk', version : '>=2.2')
+fmt_dep = dependency('fmt', method: 'cmake', modules: ['fmt::fmt'])
+pmtf_dep = dependency('pmtf', version : '>= 0.0.2')
+gnuradio_gr_dep = dependency('gnuradio-runtime')
+volk_dep = dependency('volk', version : '>=2.2')
 CLI11_dep = dependency('cli11')
 
-# Import python3 meson module which is used to find the Python dependencies.
-py3_inst = import('python').find_installation('python3')
-
-pybind11_dep = dependency('pybind11', required : get_option('enable_python'))
-threads_dep = dependency('threads')
-gtest_dep = dependency('gtest', main : true, version : '>=1.10', required : get_option('enable_testing'))
-USE_CUDA = cuda_available and get_option('enable_cuda')
-cuda_dep = dependency('cuda', version : '>=10.1', required : USE_CUDA , modules : ['cufft'])
-cusp_dep = dependency('cusp', required : USE_CUDA)
-
-prefix = get_option('prefix')
-# Escape spaces
-prefix_parts = prefix.split(' ')
-prefix = '\ '.join(prefix_parts)
-share_dir = join_paths(prefix,'share')
-
-# gnuradio_dep = dependency('gnuradio', method: 'cmake')
-# TODO - do this with subcomponents
-pmt_dep = dependency('pmtf')
-gnuradio_gr_dep = dependency('gnuradio-runtime')
-
-prefix = get_option('prefix')
-# Escape spaces
-prefix_parts = prefix.split(' ')
-prefix = '\ '.join(prefix_parts)
-share_dir = join_paths(prefix,'share')
-
-USE_CUDA = cuda_available and get_option('enable_cuda')
-IMPLEMENT_CUDA = USE_CUDA
-IMPLEMENT_CPU = true
-SCRIPTS_DIR=join_paths(share_dir,'utils','blockbuilder','scripts')
-
+if GR_ENABLE_PYTHON
+run_command('python3', join_paths(SCRIPTS_DIR,'gen_meson.py'), 
+  join_paths(meson.project_source_root(),'blocklib'), '--enable_python', check: true)
+else
+run_command('python3', join_paths(SCRIPTS_DIR,'gen_meson.py'), 
+  join_paths(meson.project_source_root(),'blocklib'), check: true)
+endif
+  
 subdir('blocklib')
 subdir('bench')
-subdir('python/gnuradio')
